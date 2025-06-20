@@ -1,77 +1,75 @@
-#ifndef FLOATPOINT_H
-#define FLOATPOINT_H
+#ifndef FLOATPOINT_HPP
+#define FLOATPOINT_HPP
 
-#include <iostream>
-#include <cstdint>
 #include "DecimalNumber.hpp"
 #include "../MyExceptions/DivisionByZero.hpp"
+#include <iostream>
+#include <cstring>
 
-template <int FractionBits>
-class FloatPoint : public DecimalNumber {
+class FloatPoint : public DecimalNumber
+{
 private:
-    static const int64_t scale = int64_t(1) << FractionBits;
-    int64_t rawValue;
+    int bits;  
 
-    static FloatPoint fromRaw(int64_t raw) {
-        FloatPoint temp(0.0f);
-        temp.rawValue = raw;
-        return temp;
+    static float bitsToFloat(int b) {
+        float result;
+        std::memcpy(&result, &b, sizeof(float));
+        return result;
+    }
+
+    static int floatToBits(float f) {
+        int b;
+        std::memcpy(&b, &f, sizeof(float));
+        return b;
     }
 
 public:
-    explicit FloatPoint(float value) {
-        rawValue = static_cast<int64_t>(value * scale);
+    explicit FloatPoint(const float& val) {
+        bits = floatToBits(val);
     }
 
-    explicit FloatPoint(int raw) : rawValue(raw) {}
+    FloatPoint(const FloatPoint& other) : bits(other.bits) {}
 
-    FloatPoint(const FloatPoint& other) {
-        rawValue = other.rawValue;
+    FloatPoint(FloatPoint&& other) noexcept : bits(other.bits) {
+        other.bits = 0;
     }
 
-    FloatPoint(FloatPoint&& other) noexcept {
-        rawValue = other.rawValue;
-        other.rawValue = 0;
-    }
+    float GetValue() const { return bitsToFloat(bits); }
 
     float ToFloat() const override {
-        return static_cast<float>(rawValue) / scale;
+        return bitsToFloat(bits);
     }
 
     void Print() const override {
-        std::cout << "F(" << FractionBits << ") = " << ToFloat() << std::endl;
+        std::cout << "Floating = " << ToFloat() << std::endl;
     }
 
     DecimalNumber* operator+(const DecimalNumber& other) const override {
-        const auto& rhs = static_cast<const FloatPoint&>(other);
-        return new FloatPoint(fromRaw(this->rawValue + rhs.rawValue));
+        const FloatPoint& rhs = static_cast<const FloatPoint&>(other);
+        float result = bitsToFloat(this->bits) + bitsToFloat(rhs.bits);
+        return new FloatPoint(result);
     }
 
     DecimalNumber* operator-(const DecimalNumber& other) const override {
-        const auto& rhs = static_cast<const FloatPoint&>(other);
-        return new FloatPoint(fromRaw(this->rawValue - rhs.rawValue));
+        const FloatPoint& rhs = static_cast<const FloatPoint&>(other);
+        float result = bitsToFloat(this->bits) - bitsToFloat(rhs.bits);
+        return new FloatPoint(result);
     }
 
     DecimalNumber* operator*(const DecimalNumber& other) const override {
-        const auto& rhs = static_cast<const FloatPoint&>(other);
-        int64_t result = (this->rawValue * rhs.rawValue) / scale;
-        return new FloatPoint(fromRaw(result));
+        const FloatPoint& rhs = static_cast<const FloatPoint&>(other);
+        float result = bitsToFloat(this->bits) * bitsToFloat(rhs.bits);
+        return new FloatPoint(result);
     }
 
     DecimalNumber* operator/(const DecimalNumber& other) const override {
-        const auto& rhs = static_cast<const FloatPoint&>(other);
-        if (rhs.rawValue == 0)
+        const FloatPoint& rhs = static_cast<const FloatPoint&>(other);
+        float divisor = bitsToFloat(rhs.bits);
+        if (divisor == 0.0f)
             throw DivisionByZero();
 
-        int64_t result = (this->rawValue * scale) / rhs.rawValue;
-        return new FloatPoint(fromRaw(result));
-    }
-
-    FloatPoint& operator=(const FloatPoint& other) {
-        if (this != &other) {
-            rawValue = other.rawValue;
-        }
-        return *this;
+        float result = bitsToFloat(this->bits) / divisor;
+        return new FloatPoint(result);
     }
 };
 
