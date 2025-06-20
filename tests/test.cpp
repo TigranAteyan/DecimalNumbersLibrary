@@ -2,7 +2,7 @@
 #include "FixedPoint.hpp"
 #include <gtest/gtest.h>
 
-using Float16 = FloatPoint<8>; // 8 бит дробной части
+using Float16 = FloatPoint<8>; 
 
 TEST(FloatPointTests, CanCreateFromFloat) {
     Float16 a(5.5f);
