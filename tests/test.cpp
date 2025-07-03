@@ -9,7 +9,7 @@ TEST(FloatPointTests, CanCreateFromString) {
     EXPECT_FLOAT_EQ(a.ToFloat(), 1.25f);
 }
 
-TEST(FloatPointTests, CanAdd) {
+TEST(FloatPointTests, AdditionWorks) {
     FloatPoint a("1.5");
     FloatPoint b("2.5");
     DecimalNumber* result = a + b;
@@ -19,7 +19,7 @@ TEST(FloatPointTests, CanAdd) {
     delete result;
 }
 
-TEST(FloatPointTests, CanSubtract) {
+TEST(FloatPointTests, SubtractionWorks) {
     FloatPoint a("5.5");
     FloatPoint b("2.0");
     DecimalNumber* result = a - b;
@@ -29,7 +29,7 @@ TEST(FloatPointTests, CanSubtract) {
     delete result;
 }
 
-TEST(FloatPointTests, CanMultiply) {
+TEST(FloatPointTests, MultiplicationWorks) {
     FloatPoint a("2.0");
     FloatPoint b("3.5");
     DecimalNumber* result = a * b;
@@ -39,7 +39,7 @@ TEST(FloatPointTests, CanMultiply) {
     delete result;
 }
 
-TEST(FloatPointTests, CanDivide) {
+TEST(FloatPointTests, DivisionWorks) {
     FloatPoint a("10.0");
     FloatPoint b("2.0");
     DecimalNumber* result = a / b;
