@@ -49,27 +49,6 @@ private:
         return std::lcm(scale1, scale2);
     }
 
-    std::string formatToString() const
-    {
-        std::string result = std::to_string(integerValue);
-        if (decimalScale == 1)
-            return result;
-
-        int digitsAfterDot = 0;
-        int s = decimalScale;
-        while (s > 1)
-        {
-            s /= 10;
-            ++digitsAfterDot;
-        }
-
-        if (static_cast<int>(result.length()) <= digitsAfterDot)
-            result = std::string(digitsAfterDot - result.length() + 1, '0') + result;
-
-        result.insert(result.end() - digitsAfterDot, '.');
-        return result;
-    }
-
 public:
     FloatPoint() = default;
 
@@ -89,7 +68,7 @@ public:
 
     void Print() const override
     {
-        std::cout << formatToString() << std::endl;
+        std::cout << ToFloat() << std::endl;
     }
 
     int getRawValue() const { return integerValue; }
